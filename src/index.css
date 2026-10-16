@@ -1,0 +1,157 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/nunito';
+@import 'leaflet/dist/leaflet.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --muted: #f4f3f7;
+  --muted-2: #e9e7ef;
+  --line: #ebeaf0;
+  --ink: #1f1d26;
+  --ink-2: #6c6a75;
+  --ink-3: #9a98a3;
+  --brand-soft: #f1ecff;
+  --shadow: 0 1px 2px rgb(20 10 50 / 0.06), 0 4px 16px rgb(20 10 50 / 0.06);
+  --shadow-lg: 0 8px 40px rgb(20 10 50 / 0.18);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #111015;
+  --surface: #1b1a21;
+  --muted: #25232c;
+  --muted-2: #302e38;
+  --line: #2d2b35;
+  --ink: #f4f3f8;
+  --ink-2: #aeacb8;
+  --ink-3: #7c7a86;
+  --brand-soft: rgb(123 77 255 / 0.18);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 16px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 8px 40px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+@theme {
+  --font-sans: 'Nunito Variable', ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #f5f1ff;
+  --color-brand-100: #ebe2ff;
+  --color-brand-200: #d6c6ff;
+  --color-brand-300: #b89dff;
+  --color-brand-400: #9a72ff;
+  --color-brand-500: #7b4dff;
+  --color-brand-600: #6834f2;
+  --color-brand-700: #5626cc;
+  --color-brand-800: #4520a3;
+  --color-brand-900: #351a7d;
+  --color-sun: #ffd84d;
+  --color-good: #1fa463;
+  --color-warn: #f29900;
+  --color-bad: #e5484d;
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-slide-up: slide-up 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-slide-left: slide-left 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-pop: pop 0.3s cubic-bezier(0.2, 0.8, 0.2, 1.4);
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slide-up {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes slide-left {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  @keyframes pop {
+    0% { transform: scale(0.6); }
+    100% { transform: scale(1); }
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand-soft: var(--brand-soft);
+  --shadow-card: var(--shadow);
+  --shadow-pop: var(--shadow-lg);
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    font-feature-settings: 'tnum' 0;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-500;
+  }
+}
+
+@utility container-app {
+  @apply mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[15px] font-bold transition-[background-color,transform,opacity] duration-150 active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100;
+}
+@utility btn-primary {
+  @apply btn bg-brand-500 text-white hover:bg-brand-600;
+}
+@utility btn-soft {
+  @apply btn bg-brand-soft text-brand-600 hover:bg-brand-100 dark:text-brand-300 dark:hover:bg-brand-500/25;
+}
+@utility btn-ghost {
+  @apply btn bg-muted text-ink hover:bg-muted-2;
+}
+@utility chip {
+  @apply inline-flex shrink-0 items-center gap-1.5 rounded-full bg-muted px-3.5 py-2 text-sm font-bold text-ink transition-colors hover:bg-muted-2;
+}
+@utility chip-active {
+  @apply bg-ink text-bg hover:bg-ink;
+}
+@utility input {
+  @apply w-full rounded-xl border-2 border-transparent bg-muted px-4 py-3 text-[15px] text-ink outline-none transition-colors placeholder:text-ink-3 focus:border-brand-500 focus:bg-surface;
+}
+@utility card {
+  @apply rounded-2xl bg-surface shadow-card;
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@utility skeleton {
+  @apply animate-pulse rounded-xl bg-muted;
+}
+
+/* Leaflet tweaks */
+.leaflet-container {
+  font-family: inherit;
+  background: var(--muted);
+}
+.dark .leaflet-tile-pane {
+  filter: brightness(0.75) contrast(1.1);
+}
+.leaflet-div-icon.nomly-pin {
+  background: transparent;
+  border: none;
+}

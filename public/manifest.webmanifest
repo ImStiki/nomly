@@ -1,0 +1,13 @@
+{
+  "name": "Nomly — Food & grocery delivery",
+  "short_name": "Nomly",
+  "description": "Order food and groceries from the best places in town.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7B4DFF",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
