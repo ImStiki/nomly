@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import clsx from 'clsx';
 import { Compass, UtensilsCrossed, Store, Search, User, ChevronRight, Globe, Mail, AtSign, MessageCircle } from 'lucide-react';
 import { Header } from './Header';
@@ -11,6 +11,8 @@ import { usePrefs } from '@/store/prefs';
 import { useAuth } from '@/store/auth';
 import { useOrders, orderProgress } from '@/store/orders';
 import { imgUrl } from '@/lib/img';
+import { toast } from '@/store/ui';
+import type { OrderStatus } from '@/types';
 
 function useThemeClass() {
   const theme = usePrefs((s) => s.theme);
@@ -84,6 +86,35 @@ function ActiveOrderBanner() {
       <ChevronRight className="size-5 shrink-0 opacity-60" />
     </Link>
   );
+}
+
+/** Pops a toast whenever one of your orders moves to a new step. */
+function OrderWatcher() {
+  const orders = useOrders((s) => s.orders);
+  const now = useNow(2000);
+  const navigate = useNavigate();
+  const last = useRef(new Map<string, OrderStatus>());
+  useEffect(() => {
+    for (const o of orders) {
+      const st = orderProgress(o, now).status;
+      const prev = last.current.get(o.id);
+      last.current.set(o.id, st);
+      if (!prev || prev === st || st === 'cancelled' || st === 'received') continue;
+      const pickup = o.mode === 'pickup';
+      const msg: Partial<Record<OrderStatus, string>> = {
+        preparing: `👩‍🍳 ${o.venueName} is preparing your order`,
+        pickup: pickup ? '🛍️ Your order is ready for pickup!' : `🛵 ${o.courierName} is picking up your order`,
+        delivering: '🚀 Your order is on the way!',
+        delivered: pickup ? '🎉 Order picked up. Enjoy!' : '🎉 Your order has arrived. Enjoy!',
+      };
+      if (msg[st])
+        toast(msg[st]!, {
+          tone: st === 'delivered' ? 'success' : 'default',
+          action: { label: 'View', onClick: () => navigate(`/order/${o.id}`) },
+        });
+    }
+  }, [orders, now, navigate]);
+  return null;
 }
 
 function BottomNav() {
@@ -184,6 +215,7 @@ export function Layout() {
       {!hideFooter && <Footer />}
       <BottomNav />
       <ActiveOrderBanner />
+      <OrderWatcher />
       <AuthModal />
       <AddressModal />
       <CartDrawer />

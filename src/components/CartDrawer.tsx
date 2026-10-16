@@ -7,7 +7,8 @@ import { getVenueById } from '@/data/venues';
 import { imgUrl } from '@/lib/img';
 import { money, plural } from '@/lib/format';
 import { smallOrderFee } from '@/lib/venue';
-import type { CartLine, Venue } from '@/types';
+import type { CartLine, MenuItem, Venue } from '@/types';
+import { getMenu } from '@/data/menus';
 
 export function CartLines({ venue, lines, compact = false }: { venue: Venue; lines: CartLine[]; compact?: boolean }) {
   const setQuantity = useCart((s) => s.setQuantity);
@@ -28,6 +29,41 @@ export function CartLines({ venue, lines, compact = false }: { venue: Venue; lin
         </li>
       ))}
     </ul>
+  );
+}
+
+/** "Popular with your order": sides, drinks and best sellers not yet in the cart. */
+function Upsell({ venue, inCart, onPick }: { venue: Venue; inCart: string[]; onPick: (itemId: string) => void }) {
+  const seen = new Set(inCart);
+  const menu = getMenu(venue);
+  const extras = menu
+    .filter((s) => /drink|side|dessert|sweet|extra|add a little/i.test(s.name))
+    .flatMap((s) => s.items);
+  const popular = menu.flatMap((s) => s.items.filter((i) => i.popular));
+  const picks: MenuItem[] = [];
+  for (const it of [...extras, ...popular]) {
+    if (picks.length >= 6) break;
+    if (seen.has(it.id)) continue;
+    seen.add(it.id);
+    picks.push(it);
+  }
+  if (!picks.length) return null;
+  return (
+    <div className="mb-4 border-t border-line pt-4">
+      <p className="mb-2 font-extrabold">Popular with your order</p>
+      <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-1">
+        {picks.map((it) => (
+          <button key={it.id} onClick={() => onPick(it.id)} className="w-28 shrink-0 text-left">
+            <span className="relative block">
+              <Img src={imgUrl(it.image, 200, 200)} alt="" className="aspect-square w-full rounded-xl" />
+              <span className="absolute right-1.5 bottom-1.5 grid size-7 place-items-center rounded-full bg-surface text-lg font-bold text-brand-600 shadow-card dark:text-brand-300">+</span>
+            </span>
+            <span className="mt-1 block text-sm font-extrabold text-brand-600 dark:text-brand-300">{money(it.price)}</span>
+            <span className="line-clamp-2 text-xs leading-tight font-bold">{it.name}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -90,6 +126,10 @@ export function CartDrawer() {
               <ChevronRight className="size-5 text-ink-3" />
             </Link>
             <CartLines venue={venue} lines={lines} />
+            <Upsell venue={venue} inCart={lines.map((l) => l.itemId)} onPick={(id) => {
+              close();
+              navigate(`/venue/${venue.slug}?item=${id}`);
+            }} />
             <button onClick={() => clear(venue.id)} className="mb-4 flex items-center gap-2 text-sm font-bold text-bad hover:underline">
               <Trash2 className="size-4" /> Clear cart
             </button>

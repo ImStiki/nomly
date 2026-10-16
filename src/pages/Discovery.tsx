@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MapPin } from 'lucide-react';
 import { usePrefs, useDeliveryPoint } from '@/store/prefs';
 import { useOrders } from '@/store/orders';
 import { useAuth } from '@/store/auth';
+import { useUI } from '@/store/ui';
 import { venuesForCity } from '@/data/venues';
 import { RESTAURANT_CATEGORIES, STORE_CATEGORIES } from '@/data/categories';
 import { getCity } from '@/data/cities';
@@ -51,6 +52,8 @@ export default function Discovery() {
   const orders = useOrders((s) => s.orders);
   const user = useAuth((s) => s.user);
   const plus = useAuth((s) => s.plus);
+  const address = usePrefs((s) => s.address);
+  const openAddress = useUI((s) => s.openAddress);
   const point = useDeliveryPoint();
   const city = getCity(cityId);
 
@@ -73,7 +76,8 @@ export default function Discovery() {
       sweet: by(all.filter((v) => v.categories.some((c) => ['dessert', 'coffee', 'bakery', 'drinks'].includes(c))), (v) => v.rating),
       late: by(restaurants.filter((v) => v.hours.close >= 25 * 60), (v) => v.hours.close),
     };
-  }, [all, point]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [all, point.lat, point.lng]);
 
   const favVenues = favorites.map((id) => all.find((v) => v.id === id)).filter(Boolean) as Venue[];
   const againIds = [...new Set(orders.filter((o) => o.cityId === cityId).map((o) => o.venueId))];
@@ -117,6 +121,18 @@ export default function Discovery() {
   return (
     <div className="container-app pt-4 md:pt-6">
       <h1 className="sr-only">Discover restaurants and stores in {city.name}</h1>
+      {!address && (
+        <button onClick={openAddress} className="mb-4 flex w-full items-center gap-3 rounded-2xl bg-brand-soft p-3 text-left transition-colors hover:bg-brand-100 sm:p-4 dark:hover:bg-brand-500/25">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-500 text-white">
+            <MapPin className="size-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block font-extrabold">Where should we deliver?</span>
+            <span className="block truncate text-sm text-ink-2">Add your address to see exact delivery times and fees in {city.name}.</span>
+          </span>
+          <span className="hidden shrink-0 rounded-full bg-brand-500 px-4 py-2 text-sm font-extrabold text-white sm:block">Set address</span>
+        </button>
+      )}
       <Carousel itemClass="w-[88%] sm:w-[60%] lg:w-[42%] xl:w-[32.5%]">
         {banners.map((b) => (
           <PromoBanner key={b.title} b={b} />

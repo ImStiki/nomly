@@ -18,6 +18,7 @@ import { Img, ItemTags, Modal, Rating, EmptyState } from '@/components/ui';
 import { FavoriteButton } from '@/components/VenueCard';
 import { ItemModal } from '@/components/ItemModal';
 import { MapView, pinHtml } from '@/components/MapView';
+import { getReviews, daysAgoLabel } from '@/data/reviews';
 import NotFound from './NotFound';
 
 function QtyBadge({ n }: { n: number }) {
@@ -132,6 +133,59 @@ function InfoModal({ venue, open, onClose }: { venue: VenueT; open: boolean; onC
         </div>
       </div>
     </Modal>
+  );
+}
+
+function Reviews({ venue }: { venue: VenueT }) {
+  const [all, setAll] = useState(false);
+  const items = getMenu(venue).flatMap((s) => s.items.filter((i) => i.popular).map((i) => i.name));
+  const reviews = getReviews(venue, items);
+  const dist = [5, 4, 3, 2, 1].map((n) => reviews.filter((r) => r.stars === n).length);
+  const shown = all ? reviews : reviews.slice(0, 4);
+  return (
+    <section id="reviews" className="mt-14">
+      <h2 className="text-2xl font-black tracking-tight">Ratings & reviews</h2>
+      <div className="mt-4 grid gap-6 md:grid-cols-[260px_1fr]">
+        <div className="card p-5">
+          <p className="text-5xl font-black">{venue.rating.toFixed(1)}</p>
+          <Rating value={venue.rating} className="mt-1 text-sm text-ink-2 [&>span:nth-child(2)]:hidden" />
+          <p className="text-sm text-ink-2">{venue.ratingCount.toLocaleString('en')} ratings</p>
+          <div className="mt-4 space-y-1.5">
+            {dist.map((n, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs font-bold">
+                <span className="w-3 text-ink-2">{5 - i}</span>
+                <Star className="size-3 fill-sun text-sun" />
+                <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+                  <span className="block h-full rounded-full bg-sun" style={{ width: `${(n / reviews.length) * 100}%` }} />
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {shown.map((r) => (
+            <article key={r.id} className="card p-4">
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-extrabold">{r.author}</p>
+                <p className="text-xs text-ink-3">{daysAgoLabel(r.daysAgo)}</p>
+              </div>
+              <p className="mt-0.5 flex gap-0.5" aria-label={`${r.stars} out of 5 stars`}>
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <Star key={n} className={clsx('size-3.5', n <= r.stars ? 'fill-sun text-sun' : 'text-ink-3')} />
+                ))}
+              </p>
+              <p className="mt-2 text-sm">{r.text}</p>
+              {r.item && <p className="mt-2 text-xs font-bold text-ink-3">Ordered: {r.item}</p>}
+            </article>
+          ))}
+          {!all && reviews.length > 4 && (
+            <button onClick={() => setAll(true)} className="btn-ghost sm:col-span-2">
+              Show all {reviews.length} reviews
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -387,6 +441,8 @@ function VenueView({ venue }: { venue: VenueT }) {
             </section>
           );
         })}
+
+        <Reviews venue={venue} />
 
         <div className="mt-14 flex flex-col items-center gap-2 rounded-3xl bg-muted p-8 text-center">
           {isStore ? <Store className="size-8 text-ink-3" /> : <Star className="size-8 text-ink-3" />}
