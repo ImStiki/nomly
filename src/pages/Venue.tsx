@@ -86,7 +86,7 @@ function InfoModal({ venue, open, onClose }: { venue: VenueT; open: boolean; onC
   const today = (new Date().getDay() + 6) % 7;
   return (
     <Modal open={open} onClose={onClose} label={`About ${venue.name}`}>
-      <div className="overflow-y-auto p-6 sm:p-8">
+      <div className="overflow-x-hidden overflow-y-auto p-6 sm:p-8">
         <h2 className="pr-12 text-2xl font-black">{venue.name}</h2>
         <p className="mt-2 text-ink-2">{venue.description}</p>
         <MapView

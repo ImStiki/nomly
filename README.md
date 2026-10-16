@@ -48,7 +48,7 @@ Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
 - [Tailwind CSS v4](https://tailwindcss.com) for styling (design tokens + dark mode)
 - [React Router v7](https://reactrouter.com) for routing
 - [Zustand](https://zustand.docs.pmnd.rs) for state (persisted to `localStorage`)
-- [Leaflet](https://leafletjs.com) with OpenStreetMap / CARTO tiles for maps
+- [Leaflet](https://leafletjs.com) with OpenStreetMap tiles for maps
 - [Lucide](https://lucide.dev) icons, Nunito font
 - Food photos from [Unsplash](https://unsplash.com/license)
 

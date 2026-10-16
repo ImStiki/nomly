@@ -62,7 +62,7 @@ function ActiveOrderBanner() {
     const p = orderProgress(o, now);
     return p.status !== 'delivered' && p.status !== 'cancelled';
   });
-  if (!active || pathname.startsWith('/order/') || pathname.startsWith('/checkout')) return null;
+  if (!active || /^\/(order|checkout|venue)\//.test(pathname)) return null;
   const p = orderProgress(active, now);
   const mins = Math.max(1, Math.ceil((p.remainingMs * speed) / 60000));
   return (
@@ -162,7 +162,7 @@ function Footer() {
             <a className="underline hover:text-white" href="https://unsplash.com" target="_blank" rel="noreferrer">
               Unsplash
             </a>{' '}
-            · Maps © OpenStreetMap contributors, © CARTO
+            · Maps © OpenStreetMap contributors
           </p>
         </div>
       </div>

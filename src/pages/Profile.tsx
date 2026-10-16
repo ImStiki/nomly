@@ -353,7 +353,7 @@ export function Account() {
       </button>
 
       <Modal open={!!addrEdit} onClose={() => setAddrEdit(null)} label="Address">
-        <div className="overflow-y-auto p-6 sm:p-8">
+        <div className="overflow-x-hidden overflow-y-auto p-6 sm:p-8">
           <h2 className="mb-5 pr-12 text-2xl font-black">{addrEdit?.id ? 'Edit address' : 'New address'}</h2>
           {addrEdit && (
             <AddressForm

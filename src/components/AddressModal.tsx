@@ -71,7 +71,7 @@ export function AddressForm({
         />
         {touched && street.trim().length < 3 && <p className="mt-1 text-sm font-semibold text-bad">Please enter your street address.</p>}
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4">
         <div>
           <label className="mb-1.5 block text-sm font-bold" htmlFor="addr-details">
             Apartment, floor, door code
@@ -176,7 +176,7 @@ export function AddressModal() {
 
   return (
     <Modal open={open} onClose={close} label="Delivery address" size="md">
-      <div className="overflow-y-auto p-6 pt-5 sm:p-8 sm:pt-6">
+      <div className="overflow-x-hidden overflow-y-auto p-6 pt-5 sm:p-8 sm:pt-6">
         {view === 'list' ? (
           <>
             <h2 className="pr-12 text-[26px] font-black tracking-tight">Where should we deliver?</h2>

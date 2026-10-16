@@ -35,7 +35,7 @@ export function AuthModal() {
 
   return (
     <Modal open={open} onClose={close} size="sm" label={mode === 'signup' ? 'Sign up' : 'Log in'}>
-      <div className="overflow-y-auto p-6 pt-14 sm:p-8 sm:pt-14">
+      <div className="overflow-x-hidden overflow-y-auto p-6 pt-14 sm:p-8 sm:pt-14">
         {step === 'start' ? (
           <>
             <div className="mb-5 grid size-14 place-items-center rounded-2xl bg-brand-soft text-3xl">👋</div>

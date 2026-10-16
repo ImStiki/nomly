@@ -23,7 +23,7 @@ const PAGES: Record<string, Page> = {
     sections: [
       ['What we do', 'Customers browse venues, order food and groceries, and follow their delivery live on a map. Venues get new customers, couriers earn on their own schedule.'],
       ['How this demo works', 'Everything runs in your browser: restaurants and menus are generated data, orders are simulated with a fake kitchen and courier, and your account is stored locally.'],
-      ['Built with', 'React, TypeScript, Vite, Tailwind CSS, Zustand and Leaflet maps. Photos come from Unsplash and maps from OpenStreetMap & CARTO.'],
+      ['Built with', 'React, TypeScript, Vite, Tailwind CSS, Zustand and Leaflet maps. Photos come from Unsplash and maps from OpenStreetMap.'],
     ],
     cta: ['Start exploring', '/discovery'],
   },

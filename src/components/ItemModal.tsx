@@ -70,7 +70,7 @@ export function ItemModal({ venue, item, onClose }: { venue: Venue; item: MenuIt
 
   return (
     <Modal open onClose={onClose} label={item.name} size="md">
-      <div className="overflow-y-auto">
+      <div className="overflow-x-hidden overflow-y-auto">
         {item.image ? (
           <Img src={imgUrl(item.image, 900, 560)} alt={item.name} className="aspect-[16/10] w-full" eager />
         ) : (

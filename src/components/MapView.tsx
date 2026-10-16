@@ -28,9 +28,9 @@ interface Props {
   interactive?: boolean;
 }
 
-const TILE_LIGHT = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-const TILE_DARK = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-const ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>';
+// Standard OpenStreetMap tiles; dark mode is done with a CSS filter (see index.css).
+const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATTRIBUTION = '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 export const pinHtml = (emoji: string, bg = '#7B4DFF') =>
   `<div style="display:grid;place-items:center;width:40px;height:40px;border-radius:999px;background:${bg};border:3px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.25);font-size:19px">${emoji}</div>`;
@@ -42,10 +42,19 @@ export function MapView({ center, zoom = 14, markers = [], route, routeDone, cla
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const layer = useRef<L.LayerGroup | null>(null);
-  const tiles = useRef<L.TileLayer | null>(null);
   const pinRef = useRef<L.Marker | null>(null);
   const onPinMoveRef = useRef(onPinMove);
   onPinMoveRef.current = onPinMove;
+  const fitRef = useRef(fitTo);
+  fitRef.current = fitTo;
+
+  const fit = () => {
+    const m = map.current;
+    const pts = fitRef.current;
+    if (!m || !pts?.length || !el.current?.clientWidth) return;
+    if (pts.length === 1) m.setView([pts[0].lat, pts[0].lng], 15);
+    else m.fitBounds(L.latLngBounds(pts.map((p) => [p.lat, p.lng])), { padding: [56, 56], maxZoom: 16 });
+  };
 
   // init
   useEffect(() => {
@@ -53,7 +62,7 @@ export function MapView({ center, zoom = 14, markers = [], route, routeDone, cla
     const m = L.map(el.current, {
       center: [center.lat, center.lng],
       zoom,
-      zoomControl: interactive,
+      zoomControl: false,
       attributionControl: true,
       dragging: interactive,
       scrollWheelZoom: false,
@@ -61,23 +70,25 @@ export function MapView({ center, zoom = 14, markers = [], route, routeDone, cla
       touchZoom: interactive,
       keyboard: interactive,
     });
-    const dark = document.documentElement.classList.contains('dark');
-    tiles.current = L.tileLayer(dark ? TILE_DARK : TILE_LIGHT, { attribution: ATTRIBUTION, subdomains: 'abcd', maxZoom: 19 }).addTo(m);
+    L.tileLayer(TILE_URL, { attribution: ATTRIBUTION, maxZoom: 19 }).addTo(m);
+    if (interactive) L.control.zoom({ position: 'bottomright' }).addTo(m);
     layer.current = L.layerGroup().addTo(m);
     map.current = m;
-    const ro = new ResizeObserver(() => m.invalidateSize());
-    ro.observe(el.current);
-    // swap tiles when the theme changes
-    const mo = new MutationObserver(() => {
-      const d = document.documentElement.classList.contains('dark');
-      tiles.current?.setUrl(d ? TILE_DARK : TILE_LIGHT);
+    // The container may have no size yet (lazy pages, modals): re-fit once it does.
+    let lastW = 0;
+    const ro = new ResizeObserver(() => {
+      m.invalidateSize();
+      const w = el.current?.clientWidth ?? 0;
+      if (w && !lastW) fit();
+      lastW = w;
     });
-    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    ro.observe(el.current);
     return () => {
       ro.disconnect();
-      mo.disconnect();
       m.remove();
       map.current = null;
+      layer.current = null;
+      pinRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -91,8 +102,7 @@ export function MapView({ center, zoom = 14, markers = [], route, routeDone, cla
   // fit bounds
   const fitKey = fitTo?.map((p) => `${p.lat.toFixed(4)},${p.lng.toFixed(4)}`).join('|');
   useEffect(() => {
-    if (!map.current || !fitTo?.length) return;
-    map.current.fitBounds(L.latLngBounds(fitTo.map((p) => [p.lat, p.lng])), { padding: [48, 48], maxZoom: 16 });
+    fit();
   }, [fitKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // markers + route
