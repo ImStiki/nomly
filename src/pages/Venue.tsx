@@ -18,6 +18,7 @@ import { Img, ItemTags, Modal, Rating, EmptyState } from '@/components/ui';
 import { FavoriteButton } from '@/components/VenueCard';
 import { ItemModal } from '@/components/ItemModal';
 import { MapView, pinHtml } from '@/components/MapView';
+import { GroupBanner } from '@/components/GroupOrder';
 import { getReviews, daysAgoLabel } from '@/data/reviews';
 import NotFound from './NotFound';
 
@@ -342,6 +343,11 @@ function VenueView({ venue }: { venue: VenueT }) {
           </button>
         </div>
 
+        {venue.type === 'restaurant' && (
+          <div className="mt-4">
+            <GroupBanner venue={venue} />
+          </div>
+        )}
         {!status.open && (
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-warn/12 p-4 text-sm">
             <Clock className="size-5 shrink-0 text-warn" />

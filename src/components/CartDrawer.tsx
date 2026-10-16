@@ -9,6 +9,7 @@ import { money, plural } from '@/lib/format';
 import { smallOrderFee } from '@/lib/venue';
 import type { CartLine, MenuItem, Venue } from '@/types';
 import { getMenu } from '@/data/menus';
+import { GuestChip } from './GroupOrder';
 
 export function CartLines({ venue, lines, compact = false }: { venue: Venue; lines: CartLine[]; compact?: boolean }) {
   const setQuantity = useCart((s) => s.setQuantity);
@@ -18,7 +19,10 @@ export function CartLines({ venue, lines, compact = false }: { venue: Venue; lin
         <li key={l.key} className="flex gap-3 py-3.5">
           {!compact && <Img src={imgUrl(l.image, 160, 160)} alt="" className="size-16 shrink-0 rounded-xl" />}
           <div className="min-w-0 flex-1">
-            <p className="font-bold">{l.name}</p>
+            <p className="flex flex-wrap items-center gap-1.5 font-bold">
+              {l.name}
+              {l.by && <GuestChip name={l.by} />}
+            </p>
             {l.options.length > 0 && <p className="text-sm text-ink-2">{l.options.map((o) => o.choiceName).join(', ')}</p>}
             {l.note && <p className="text-sm text-ink-3 italic">“{l.note}”</p>}
             <p className="mt-1 text-sm font-extrabold text-brand-600 dark:text-brand-300">{money(linePrice(l))}</p>

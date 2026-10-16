@@ -7,6 +7,7 @@ import { Logo, Toaster, Img } from './ui';
 import { AuthModal } from './AuthModal';
 import { AddressModal } from './AddressModal';
 import { CartDrawer } from './CartDrawer';
+import { GroupSimulator } from './GroupOrder';
 import { usePrefs } from '@/store/prefs';
 import { useAuth } from '@/store/auth';
 import { useOrders, orderProgress } from '@/store/orders';
@@ -216,6 +217,7 @@ export function Layout() {
       <BottomNav />
       <ActiveOrderBanner />
       <OrderWatcher />
+      <GroupSimulator />
       <AuthModal />
       <AddressModal />
       <CartDrawer />

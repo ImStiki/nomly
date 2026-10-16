@@ -110,6 +110,23 @@ export interface CartLine {
   options: SelectedOption[];
   quantity: number;
   note?: string;
+  /** Group orders: name of the friend who added this line (undefined = you). */
+  by?: string;
+}
+
+export interface GroupGuest {
+  name: string;
+  color: string;
+}
+
+export interface GroupOrder {
+  code: string;
+  createdAt: number;
+  guests: GroupGuest[];
+  /** Guests who have joined so far. */
+  joined: string[];
+  /** Number of simulated events already applied. */
+  step: number;
 }
 
 export interface Address {

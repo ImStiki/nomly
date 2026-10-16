@@ -25,7 +25,7 @@ import type { Order, PromoKind } from '@/types';
 import { getVenueBySlug } from '@/data/venues';
 import { findMenuItem } from '@/data/menus';
 import { getCity } from '@/data/cities';
-import { useVenueCart, useCart, cartSubtotal, unitPrice } from '@/store/cart';
+import { useVenueCart, useCart, cartSubtotal, unitPrice, splitBill } from '@/store/cart';
 import { usePrefs } from '@/store/prefs';
 import { useAuth } from '@/store/auth';
 import { useOrders } from '@/store/orders';
@@ -170,6 +170,7 @@ function CheckoutView({ venueSlug }: { venueSlug: string }) {
   const navigate = useNavigate();
   const lines = useVenueCart(venue.id);
   const clearCart = useCart((s) => s.clear);
+  const group = useCart((s) => s.groups[venue.id]);
   const address = usePrefs((s) => s.address);
   const demoSpeed = usePrefs((s) => s.demoSpeed);
   const user = useAuth((s) => s.user);
@@ -487,6 +488,22 @@ function CheckoutView({ venueSlug }: { venueSlug: string }) {
               className="input mt-3 resize-none text-sm"
             />
           </Card>
+
+          {(group || lines.some((l) => l.by)) && (
+            <Card title="Split the bill">
+              <p className="mb-3 text-sm text-ink-2">Everyone pays for their own items. Fees and the tip are shared equally.</p>
+              <ul className="divide-y divide-line">
+                {splitBill(lines, deliveryFee + sFee + small + tipAmount, discount + creditsUsed, ['You', ...(group?.joined ?? [])]).map((p) => (
+                  <li key={p.name} className="flex items-center justify-between py-2.5">
+                    <span className="font-bold">{p.name}</span>
+                    <span className="text-sm text-ink-2">
+                      items {money(p.items)} · <b className="text-ink">{money(p.total)}</b>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
 
           <Card
             title="Payment"
