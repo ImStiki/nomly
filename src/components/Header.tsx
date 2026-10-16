@@ -55,7 +55,7 @@ export function AddressButton({ compact = false }: { compact?: boolean }) {
         <MapPin className="size-4" />
       </span>
       <span className="min-w-0">
-        <span className={clsx('block truncate text-sm leading-tight font-extrabold', compact ? 'max-w-[120px]' : 'max-w-[180px]')}>
+        <span className={clsx('block truncate text-sm leading-tight font-extrabold', compact ? 'max-w-[110px]' : 'max-w-[180px]')}>
           {address ? address.street : city.name}
         </span>
         {!compact && <span className="block truncate text-xs leading-tight text-ink-2">{address ? city.name : 'Set delivery address'}</span>}
@@ -298,7 +298,6 @@ export function Header() {
   const scrolled = useScrolled();
   const user = useAuth((s) => s.user);
   const openAuth = useUI((s) => s.openAuth);
-  const navigate = useNavigate();
   return (
     <header className={clsx('sticky top-0 z-[500] bg-bg/90 backdrop-blur-xl transition-shadow', scrolled && 'shadow-[0_1px_0_var(--line)]')}>
       <div className="container-app flex h-[68px] items-center gap-2 sm:gap-3 md:h-[76px]">
@@ -327,9 +326,6 @@ export function Header() {
         </nav>
         <SearchBox className="ml-auto hidden w-full max-w-sm md:block lg:max-w-md" />
         <div className="ml-auto flex items-center gap-2 md:ml-0">
-          <button onClick={() => navigate('/search')} aria-label="Search" className="grid size-11 place-items-center rounded-full bg-muted md:hidden">
-            <Search className="size-5" />
-          </button>
           <CartButton />
           {user ? (
             <UserMenu />

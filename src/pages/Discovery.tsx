@@ -26,20 +26,20 @@ function PromoBanner({ b }: { b: Banner }) {
   return (
     <Link
       to={b.to}
-      className="group relative flex h-[200px] overflow-hidden rounded-3xl p-6 text-white sm:h-[220px] sm:p-7"
+      className="group relative flex h-[190px] overflow-hidden rounded-3xl p-5 text-white sm:h-[220px] sm:p-7"
       style={{ background: b.bg }}
     >
-      <div className="relative z-10 flex max-w-[56%] flex-col">
-        <h3 className="text-2xl leading-[1.1] font-black tracking-tight sm:text-[28px]">{b.title}</h3>
-        <p className="mt-2 line-clamp-3 text-sm font-semibold opacity-90">{b.text}</p>
-        <span className="mt-auto inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-extrabold text-[#1f1d26] transition-transform group-hover:translate-x-1">
+      <div className="relative z-10 flex max-w-[64%] flex-col sm:max-w-[56%]">
+        <h3 className="text-[22px] leading-[1.1] font-black tracking-tight sm:text-[28px]">{b.title}</h3>
+        <p className="mt-1.5 line-clamp-2 text-[13px] font-semibold opacity-90 sm:mt-2 sm:line-clamp-3 sm:text-sm">{b.text}</p>
+        <span className="mt-auto inline-flex w-fit items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-[13px] font-extrabold whitespace-nowrap text-[#1f1d26] transition-transform group-hover:translate-x-1 sm:px-4 sm:text-sm">
           {b.cta} <ArrowRight className="size-4" />
         </span>
       </div>
       <Img
         src={imgUrl(b.image, 500, 500)}
         alt=""
-        className="absolute top-1/2 -right-12 size-[210px] -translate-y-1/2 rotate-6 rounded-[36px] shadow-2xl transition-transform duration-500 group-hover:rotate-3 sm:size-[230px]"
+        className="absolute top-1/2 -right-10 size-[150px] -translate-y-1/2 rotate-6 rounded-[32px] shadow-2xl transition-transform duration-500 group-hover:rotate-3 sm:-right-12 sm:size-[230px] sm:rounded-[36px]"
       />
     </Link>
   );
@@ -83,7 +83,7 @@ export default function Discovery() {
     {
       title: user ? `Hungry, ${user.name.split(' ')[0]}?` : 'Free delivery on your first order',
       text: user ? 'Use code NOMLY10 for 10% off your next order — today only.' : 'Sign up and use code WELCOME at checkout. Valid for new users.',
-      cta: user ? 'Find something tasty' : 'Order now',
+      cta: 'Order now',
       to: '/restaurants',
       image: poolImage('burger', 3),
       bg: 'linear-gradient(135deg,#7B4DFF,#5626CC)',
